@@ -1,0 +1,436 @@
+{
+  "eval_cases": [
+    {
+      "eval_case_id": "multiturn_sick_leave_policy_and_workweek_balance_check",
+      "agent_data": {
+        "agents": {
+          "root_agent": {
+            "agent_id": "root_agent",
+            "agent_type": "RouterAgent",
+            "instruction": "Enterprise HR Coordinator Agent routing queries to rag_agent, workweek_agent, and service_immediately_agent."
+          },
+          "rag_agent": {
+            "agent_id": "rag_agent",
+            "agent_type": "SpecialistAgent",
+            "instruction": "Answers HR policy questions grounded in the ALTOSTRAT SINGAPORE EMPLOYEE POLICY HANDBOOK via Vertex AI Search.",
+            "tools": [
+              {
+                "function_declarations": [
+                  {
+                    "name": "search_hr_policy",
+                    "description": "Searches the ALTOSTRAT SINGAPORE EMPLOYEE POLICY HANDBOOK via Vertex AI Search.",
+                    "parameters": {
+                      "type": "OBJECT",
+                      "properties": {
+                        "query": {
+                          "type": "STRING"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "workweek_agent": {
+            "agent_id": "workweek_agent",
+            "agent_type": "SpecialistAgent",
+            "instruction": "Executes HCM leave balance lookups and leave requests via WorkWeek MCP Server (/work-week/mcp/).",
+            "tools": [
+              {
+                "function_declarations": [
+                  {
+                    "name": "get_current_employee_id",
+                    "description": "Get the employee ID of the authenticated user session.",
+                    "parameters": {
+                      "type": "OBJECT",
+                      "properties": {}
+                    }
+                  },
+                  {
+                    "name": "get_employee_balances",
+                    "description": "Fetch current vacation and sick leave balances for a specific WorkWeek employee.",
+                    "parameters": {
+                      "type": "OBJECT",
+                      "properties": {
+                        "employee_id": {
+                          "type": "STRING"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "turns": [
+          {
+            "turn_index": 0,
+            "events": [
+              {
+                "author": "user",
+                "content": {
+                  "parts": [
+                    {
+                      "text": "I have the flu and need 3 days off in Singapore. What is our outpatient sick leave policy and do I need a Medical Certificate (MC)?"
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "root_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "function_call": {
+                        "name": "transfer_to_agent",
+                        "args": {
+                          "agent_name": "rag_agent"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "rag_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "function_call": {
+                        "name": "search_hr_policy",
+                        "args": {
+                          "query": "Singapore outpatient sick leave days Medical Certificate MC requirement 3 days"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "rag_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "function_response": {
+                        "name": "search_hr_policy",
+                        "response": {
+                          "status": "success",
+                          "citations": [
+                            "gs://sales-demo-492804-hr-policies-source/handbook.pdf"
+                          ],
+                          "grounded_context": "Section 25: SICK TIME & HOSPITALIZATION LEAVE (SINGAPORE). Full-time eligible employees receive up to 14 days of paid outpatient sick leave per calendar year. A Medical Certificate (MC) from a registered medical practitioner is required if sick leave exceeds 2 consecutive work days."
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "rag_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "text": "Under Section 25 of the Altostrat Singapore Employee Policy Handbook (gs://sales-demo-492804-hr-policies-source/handbook.pdf), full-time employees receive up to 14 days of paid outpatient sick leave per calendar year. Because your absence is 3 consecutive days (exceeding 2 days), you are required to submit a Medical Certificate (MC) from a registered medical practitioner within 48 hours via WorkWeek."
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "turn_index": 1,
+            "events": [
+              {
+                "author": "user",
+                "content": {
+                  "parts": [
+                    {
+                      "text": "Got it, thank you! Can you check how many sick leave days I currently have remaining in WorkWeek?"
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "root_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "function_call": {
+                        "name": "transfer_to_agent",
+                        "args": {
+                          "agent_name": "workweek_agent"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "workweek_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "function_call": {
+                        "name": "get_current_employee_id",
+                        "args": {}
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "workweek_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "function_response": {
+                        "name": "get_current_employee_id",
+                        "response": {
+                          "result": "EMP-779"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "workweek_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "function_call": {
+                        "name": "get_employee_balances",
+                        "args": {
+                          "employee_id": "EMP-779"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "workweek_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "function_response": {
+                        "name": "get_employee_balances",
+                        "response": {
+                          "result": "Employee EMP-779 Leave Balances:\n- Vacation: 15.0 days remaining (5.0/20.0 used)\n- Sick: 10.0 days remaining (0.0/10.0 used)"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "workweek_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "text": "Your WorkWeek profile (Employee ID: EMP-779) shows that you currently have 10.0 days of paid sick leave remaining (0.0 out of 10.0 days used), which is more than enough to cover your 3-day absence."
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "eval_case_id": "multiturn_cross_agent_address_check_and_ticket_status",
+      "agent_data": {
+        "agents": {
+          "root_agent": {
+            "agent_id": "root_agent",
+            "agent_type": "RouterAgent",
+            "instruction": "Enterprise HR Coordinator Agent routing queries to rag_agent, workweek_agent, and service_immediately_agent."
+          },
+          "workweek_agent": {
+            "agent_id": "workweek_agent",
+            "agent_type": "SpecialistAgent",
+            "instruction": "Executes personal contact lookups via WorkWeek MCP Server (/work-week/mcp/)."
+          },
+          "service_immediately_agent": {
+            "agent_id": "service_immediately_agent",
+            "agent_type": "SpecialistAgent",
+            "instruction": "Executes ITSM ticket listing and status updates via ServiceImmediately MCP Server (/service-immediately/mcp/)."
+          }
+        },
+        "turns": [
+          {
+            "turn_index": 0,
+            "events": [
+              {
+                "author": "user",
+                "content": {
+                  "parts": [
+                    {
+                      "text": "First, please confirm my registered office/home address in WorkWeek."
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "root_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "function_call": {
+                        "name": "transfer_to_agent",
+                        "args": {
+                          "agent_name": "workweek_agent"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "workweek_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "function_call": {
+                        "name": "get_current_employee_id",
+                        "args": {}
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "workweek_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "function_response": {
+                        "name": "get_current_employee_id",
+                        "response": {
+                          "result": "EMP-779"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "workweek_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "function_call": {
+                        "name": "get_personal_info",
+                        "args": {
+                          "employee_id": "EMP-779"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "workweek_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "function_response": {
+                        "name": "get_personal_info",
+                        "response": {
+                          "result": "Employee EMP-779 Personal Info:\n- Address: Singapore Office, 80 Pasir Panjang Rd, Singapore\n- Phone: +65-6521-0000"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "workweek_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "text": "Your registered address in WorkWeek (Employee ID: EMP-779) is: Singapore Office, 80 Pasir Panjang Rd, Singapore."
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "turn_index": 1,
+            "events": [
+              {
+                "author": "user",
+                "content": {
+                  "parts": [
+                    {
+                      "text": "Now check my open onboarding ticket in ServiceImmediately and tell me its ticket ID and current status."
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "root_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "function_call": {
+                        "name": "transfer_to_agent",
+                        "args": {
+                          "agent_name": "service_immediately_agent"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "service_immediately_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "function_call": {
+                        "name": "list_tickets",
+                        "args": {
+                          "employee_id": "EMP-779"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "service_immediately_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "function_response": {
+                        "name": "list_tickets",
+                        "response": {
+                          "result": "[{\"ticket_id\": \"INC0004543\", \"requested_by\": \"EMP-779\", \"category\": \"Inquiry / Help\", \"short_description\": \"Onboarding setup and badges configuration\", \"status\": \"New\", \"priority\": \"3 - Moderate\"}]"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "author": "service_immediately_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "text": "Your open onboarding ticket in ServiceImmediately is Ticket ID INC0004543 ('Onboarding setup and badges configuration'), and its current status is New (Priority: 3 - Moderate)."
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

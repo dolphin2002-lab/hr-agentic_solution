@@ -1,0 +1,140 @@
+{
+  "eval_cases": [
+    {
+      "eval_case_id": "singapore_sick_leave_policy_vais",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "How many days of paid outpatient sick leave and hospitalization leave do full-time employees get in Singapore according to our handbook?"
+          }
+        ]
+      },
+      "responses": [
+        {
+          "response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "According to the Altostrat Singapore Employee Policy Handbook & Conduct Guidelines (Section 1.1 & Section 19 / Section 25: Outpatient Sick Time & Hospitalization Leave (Singapore)), eligible full-time employees receive up to 14 days of paid outpatient sick leave per calendar year and up to 60 days of paid hospitalization leave per calendar year (consisting of an additional 46 work days, inclusive of the 14 outpatient days). A Medical Certificate (MC) from a registered medical practitioner is required if sick leave exceeds 2 consecutive work days."
+              }
+            ]
+          }
+        }
+      ],
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "Full-time eligible employees in Singapore receive up to 14 days of paid outpatient sick leave and up to 60 days of paid hospitalization leave per calendar year (inclusive of the 14 outpatient days), per Section 25 of the Altostrat Singapore Employee Policy Handbook (gs://sales-demo-492804-hr-policies-source/handbook.pdf)."
+            }
+          ]
+        }
+      },
+      "context": "Section 25: SICK TIME & HOSPITALIZATION LEAVE (SINGAPORE). Full-time employees who have completed at least 6 months of service are entitled to 14 days of paid outpatient sick leave per calendar year and up to 60 days of paid hospitalization leave per calendar year (inclusive of the 14 days of outpatient sick leave)."
+    },
+    {
+      "eval_case_id": "workweek_mcp_profile_and_vacation_balance",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "What is my current registered home address and my remaining vacation balance in WorkWeek?"
+          }
+        ]
+      },
+      "responses": [
+        {
+          "response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Here are your details from WorkWeek (Employee ID: EMP-779): Registered Home Address: Singapore Office, 80 Pasir Panjang Rd, Singapore. Remaining Vacation Balance: 15.0 days (5.0 / 20.0 days used)."
+              }
+            ]
+          }
+        }
+      ],
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "Your registered home address in WorkWeek (Employee ID: EMP-779) is Singapore Office, 80 Pasir Panjang Rd, Singapore, and your remaining vacation balance is 15.0 days (out of 20.0 days total)."
+            }
+          ]
+        }
+      },
+      "context": "WorkWeek MCP Live Server response for EMP-779: Personal Info Address: Singapore Office, 80 Pasir Panjang Rd, Singapore; Phone: +65-6521-0000. Leave Balances: Vacation: 15.0 days remaining (5.0/20.0 used); Sick: 10.0 days remaining (0.0/10.0 used)."
+    },
+    {
+      "eval_case_id": "service_immediately_mcp_list_tickets",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Can you list all my open support tickets in ServiceImmediately?"
+          }
+        ]
+      },
+      "responses": [
+        {
+          "response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Here are your support tickets in ServiceImmediately for Employee ID EMP-779: Ticket ID INC0004543 (Short Description: Onboarding setup and badges configuration, Category: Inquiry / Help, Status: New, Priority: 3 - Moderate, Assigned To: ITIL User)."
+              }
+            ]
+          }
+        }
+      ],
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "Your open support ticket in ServiceImmediately for EMP-779 is Ticket ID INC0004543 (Category: Inquiry / Help, Short Description: Onboarding setup and badges configuration, Status: New, Priority: 3 - Moderate)."
+            }
+          ]
+        }
+      },
+      "context": "ServiceImmediately MCP Live Server response for EMP-779: [{'ticket_id': 'INC0004543', 'requested_by': 'EMP-779', 'category': 'Inquiry / Help', 'short_description': 'Onboarding setup and badges configuration', 'status': 'New', 'priority': '3 - Moderate', 'assignment_group': 'Service Desk', 'assigned_to': 'ITIL User'}]."
+    },
+    {
+      "eval_case_id": "guardrail_sequential_ticket_state_transition",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Please immediately update my ticket INC0004543 directly from 'New' status to 'Closed' status."
+          }
+        ]
+      },
+      "responses": [
+        {
+          "response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "I cannot directly update ticket INC0004543 from 'New' to 'Closed'. In accordance with our ITSM Compliance Guardrails (Section 5.5), tickets must follow a strict sequential lifecycle: New -> In Progress -> Resolved -> Closed. Direct state transitions from 'New' or 'In Progress' directly to 'Closed' are strictly prohibited."
+              }
+            ]
+          }
+        }
+      ],
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "I cannot update ticket INC0004543 directly from 'New' to 'Closed'. Per our compliance guardrails (Section 5.5), tickets must follow sequential state transitions: New -> In Progress -> Resolved -> Closed."
+            }
+          ]
+        }
+      },
+      "context": "Compliance Guardrail Section 5.5: Tickets must follow sequential state transitions: New -> In Progress -> Resolved -> Closed. Never jump directly from New or In Progress to Closed."
+    }
+  ]
+}

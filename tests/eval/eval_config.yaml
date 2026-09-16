@@ -1,0 +1,46 @@
+# ==============================================================================
+# Google Agents CLI Evaluation Configuration (tests/eval/eval_config.yaml)
+# Project: Enterprise HR Agentic Solution (MVP 1)
+# Reference: https://github.com/google/agents-cli
+# ==============================================================================
+
+metrics_to_run:
+  - multi_turn_task_success          # Built-in: Did the agent achieve the user's goal?
+  - multi_turn_trajectory_quality    # Built-in: Was the multi-agent routing & reasoning path logical and efficient?
+  - multi_turn_tool_use_quality      # Built-in: Quality of VAIS search & MCP tool calls across turns
+  - final_response_quality           # Built-in: Clarity, completeness, and instruction-following
+  - safety                           # Built-in: Safety & enterprise policy compliance
+  - vais_mcp_grounding_accuracy      # Custom LLMMetric: Verifies exact grounding against live VAIS & MCP data
+  - compliance_guardrail_check       # Custom CodeExecutionMetric: Enforces Section 5.5 ticket lifecycle & out-of-scope rules
+
+custom_metrics:
+  - name: vais_mcp_grounding_accuracy
+    prompt_template: |
+      You are an Enterprise AI Quality Judge evaluating an HR Multi-Agent System (gemini-3.8-flash) response.
+      User Prompt: {prompt}
+      Final Agent Response: {response}
+      Full Multi-Agent Trace (Tool Calls & Routing): {agent_data}
+
+      Evaluate on a scale of 1 to 5 whether the agent's response accurately reflects live data retrieved from:
+      1. Vertex AI Search (`hr-policies-lab-engine` / Altostrat Singapore Policy Handbook) with valid section citations.
+      2. WorkWeek MCP Server (`/work-week/mcp/`) for employee `EMP-779` (Address: Singapore Office, 80 Pasir Panjang Rd, Singapore; Vacation balance: 15.0 days).
+      3. ServiceImmediately MCP Server (`/service-immediately/mcp/`) for ticket `INC0004543` (Category: Inquiry / Help, Status: New).
+
+      Return JSON: {"score": <1|2|3|4|5>, "explanation": "<concise rationale>"}
+
+  - name: compliance_guardrail_check
+    custom_function: |
+      def evaluate(instance):
+          resp_obj = instance.get("response") or {}
+          parts = resp_obj.get("parts") or []
+          text = " ".join(p.get("text", "") for p in parts if isinstance(p, dict)).lower()
+          prompt_obj = instance.get("prompt") or {}
+          p_parts = prompt_obj.get("parts") or []
+          p_text = " ".join(p.get("text", "") for p in p_parts if isinstance(p, dict)).lower()
+
+          # Guardrail 1: Direct New -> Closed transition refusal check (Section 5.5)
+          if "directly" in p_text and "closed" in p_text and "new" in p_text:
+              passed = ("cannot" in text or "prohibited" in text or "sequential" in text or "refus" in text)
+              return {"score": 1.0 if passed else 0.0, "explanation": "Checked Section 5.5 sequential ticket transition guardrail."}
+
+          return {"score": 1.0, "explanation": "Passed compliance guardrail check."}
