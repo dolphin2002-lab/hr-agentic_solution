@@ -27,11 +27,17 @@ from .auth_patch import ensure_vertex_auth, _get_cached_gcloud_token
 
 ensure_vertex_auth()
 
-LOCAL_POLICY_PATH = (
+_LOCAL_AGENT_POLICY = (
+    Path(__file__).resolve().parent / "altostrat_singapore_policy_handbook.md"
+)
+_REPO_POLICY = (
     Path(__file__).resolve().parent.parent.parent
     / "data"
     / "policies"
     / "altostrat_singapore_policy_handbook.md"
+)
+LOCAL_POLICY_PATH = (
+    _LOCAL_AGENT_POLICY if _LOCAL_AGENT_POLICY.exists() else _REPO_POLICY
 )
 
 # Persistent HTTP Keep-Alive client shared for high-speed REST/JSON-RPC grounding

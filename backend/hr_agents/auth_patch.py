@@ -22,12 +22,33 @@ _LAST_FETCH_TIME: float = 0.0
 _TOKEN_TTL_SECONDS: float = 1800.0
 
 
+_orig_auth_default = google.auth.default
+
+
 def _get_cached_gcloud_token() -> str:
-  """Fetches gcloud access token once and caches it in memory for 30 minutes."""
+  """Fetches OAuth2 access token from native ADC (Cloud Run / Metadata Server) or gcloud CLI fallback, cached for 30 minutes."""
   global _CACHED_TOKEN, _LAST_FETCH_TIME
   now = time.time()
   if _CACHED_TOKEN and (now - _LAST_FETCH_TIME) < _TOKEN_TTL_SECONDS:
     return _CACHED_TOKEN
+
+  # 1. Try native Application Default Credentials (works in Cloud Run / Agent Engine / GKE)
+  try:
+    import google.auth.transport.requests
+    creds, _ = _orig_auth_default(
+        scopes=["https://www.googleapis.com/auth/cloud-platform"]
+    )
+    if creds:
+      if not creds.valid or not creds.token:
+        creds.refresh(google.auth.transport.requests.Request())
+      if creds.token:
+        _CACHED_TOKEN = creds.token
+        _LAST_FETCH_TIME = now
+        return _CACHED_TOKEN
+  except Exception:
+    pass
+
+  # 2. Fallback to gcloud CLI (works on Cloudtop dev environments)
   _CACHED_TOKEN = subprocess.check_output(
       ["gcloud", "auth", "print-access-token"], text=True
   ).strip()
@@ -66,9 +87,9 @@ _CRED_INSTANCES = {}
 def ensure_vertex_auth():
   """Patches google.auth.default with a singleton cached credential instance, disables mTLS lag, and enforces IPv4 on aiohttp TCPConnector."""
   os.environ["GOOGLE_API_USE_CLIENT_CERTIFICATE"] = "false"
-  os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "true")
+  os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "true"
   os.environ.setdefault("GOOGLE_CLOUD_PROJECT", "sales-demo-492804")
-  os.environ.setdefault("GOOGLE_CLOUD_LOCATION", "global")
+  os.environ["GOOGLE_CLOUD_LOCATION"] = "global"
 
   mtls.has_default_client_cert_source = lambda: False
   mtls.should_use_client_cert = lambda: False

@@ -35,6 +35,31 @@ flowchart TD
 
 ---
 
+## ☁️ Live Cloud Run Deployment (`sales-demo-492804` / `us-central1`)
+
+The agent is deployed and serving live traffic on **Google Cloud Run** with both ADK Web UI and REST API enabled:
+
+- **Live Cloud Run URL (Web UI & API)**: [https://hr-agentic-solution-176121361862.us-central1.run.app](https://hr-agentic-solution-176121361862.us-central1.run.app)
+- **Service Name**: `hr-agentic-solution`
+- **Active Revision**: `hr-agentic-solution-00001-hgh`
+
+### Redeploy Command
+```bash
+PYTHONPATH=. .venv/bin/adk deploy cloud_run \
+  --project=sales-demo-492804 \
+  --region=us-central1 \
+  --service_name=hr-agentic-solution \
+  --app_name=hr_agents \
+  --with_ui \
+  --allow_origins="*" \
+  backend/hr_agents \
+  -- \
+  --allow-unauthenticated \
+  --set-env-vars="GOOGLE_GENAI_USE_VERTEXAI=true,GOOGLE_CLOUD_PROJECT=sales-demo-492804,GOOGLE_CLOUD_LOCATION=global,VERTEX_AI_SEARCH_ENGINE_ID=hr-policies-lab-engine,VERTEX_AI_DATA_STORE_ID=hr-policies-lab-store,VAIS_LOCATION=global,WORKWEEK_MCP_URL=https://mock-saas.aishprabhat.demo.altostrat.com/work-week/mcp/,WORKWEEK_MCP_TOKEN=<TOKEN>,INCIDENT_MCP_URL=https://mock-saas.aishprabhat.demo.altostrat.com/service-immediately/mcp/,INCIDENT_MCP_TOKEN=<TOKEN>"
+```
+
+---
+
 ## 🚀 Quickstart & Local Testing
 
 ### Prerequisites
