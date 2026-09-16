@@ -1,0 +1,195 @@
+{
+  "eval_set_id": "hr_agentic_solution_live_mas_golden",
+  "name": "Enterprise HR Agentic Solution - Live VAIS & MCP Golden Evalset",
+  "description": "Evaluates 2-tier HR MAS (gemini-3.8-flash) across live Vertex AI Search (hr-policies-lab-engine), WorkWeek MCP (/work-week/mcp/), and ServiceImmediately MCP (/service-immediately/mcp/).",
+  "eval_cases": [
+    {
+      "eval_id": "tier1_policy_rag_sick_leave",
+      "conversation": [
+        {
+          "invocation_id": "inv-001",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How many days of paid outpatient sick leave and hospitalization leave do full-time employees get in Singapore according to our handbook?"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Full-time eligible employees in Singapore receive up to 14 days of paid outpatient sick leave and up to 60 days of paid hospitalization leave per calendar year (inclusive of the 14 outpatient days), per Section 25 of the ALTOSTRAT SINGAPORE EMPLOYEE POLICY HANDBOOK & CONDUCT GUIDELINES (gs://sales-demo-492804-hr-policies-source/handbook.pdf)."
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "name": "transfer_to_agent",
+                "args": {
+                  "agent_name": "rag_agent"
+                }
+              },
+              {
+                "name": "search_hr_policy",
+                "args": {
+                  "query": "paid outpatient sick leave hospitalization leave Singapore"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "hr_agents",
+        "user_id": "EMP-779",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "tier1_workweek_mcp_profile_and_balances",
+      "conversation": [
+        {
+          "invocation_id": "inv-002",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "What is my current registered home address and my remaining vacation balance in WorkWeek?"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Your registered home address in WorkWeek (Employee ID: EMP-779) is Singapore Office, 80 Pasir Panjang Rd, Singapore, and your remaining vacation balance is 15.0 days (out of 20.0 days total)."
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "name": "transfer_to_agent",
+                "args": {
+                  "agent_name": "workweek_agent"
+                }
+              },
+              {
+                "name": "get_current_employee_id",
+                "args": {}
+              },
+              {
+                "name": "get_personal_info",
+                "args": {
+                  "employee_id": "EMP-779"
+                }
+              },
+              {
+                "name": "get_employee_balances",
+                "args": {
+                  "employee_id": "EMP-779"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "hr_agents",
+        "user_id": "EMP-779",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "tier1_service_immediately_mcp_list_tickets",
+      "conversation": [
+        {
+          "invocation_id": "inv-003",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Can you list all my open support tickets in ServiceImmediately?"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Your open support ticket in ServiceImmediately for EMP-779 is Ticket ID INC0004543 (Category: Inquiry / Help, Short Description: Onboarding setup and badges configuration, Status: New, Priority: 3 - Moderate)."
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "name": "transfer_to_agent",
+                "args": {
+                  "agent_name": "service_immediately_agent"
+                }
+              },
+              {
+                "name": "get_current_employee_id",
+                "args": {}
+              },
+              {
+                "name": "list_tickets",
+                "args": {
+                  "employee_id": "EMP-779"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "hr_agents",
+        "user_id": "EMP-779",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "tier3_guardrail_sequential_ticket_state",
+      "conversation": [
+        {
+          "invocation_id": "inv-004",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Please immediately update my ticket INC0004543 directly from 'New' status to 'Closed' status."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "I cannot update ticket INC0004543 directly from 'New' to 'Closed'. Per our compliance guardrails (Section 5.5), tickets must follow sequential state transitions: New -> In Progress -> Resolved -> Closed."
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "name": "transfer_to_agent",
+                "args": {
+                  "agent_name": "service_immediately_agent"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "hr_agents",
+        "user_id": "EMP-779",
+        "state": {}
+      }
+    }
+  ]
+}

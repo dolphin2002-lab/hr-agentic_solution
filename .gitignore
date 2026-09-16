@@ -1,0 +1,21 @@
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+
+# Virtual Environments & Python Cache
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# IDE & Agent Scratch
+.vscode/
+.idea/
+.adk/
+.pytest_cache/
+*.log
