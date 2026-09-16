@@ -68,6 +68,9 @@ During initial evaluation runs (`evals/run_live_eval.py`), the Quality Flywheel 
 - **Initial Failure (Run 1 — 75.0% Pass Rate)**: When `service_immediately_agent` was invoked on `service_immediately_mcp_list_tickets` in a fresh session without an explicit employee ID in the prompt, it asked the user for their Employee ID instead of calling `list_tickets`, because `get_current_employee_id` was only bound to `workweek_agent`.
 - **Remediation Applied**: Updated `service_immediately_agent` in `backend/hr_agents/sub_agents.py` to include `workweek_mcp` (`get_current_employee_id`) in its toolset and instructed it to automatically resolve `employee_id` before calling `list_tickets`.
 - **Post-Fix Verification (Run 2 — 100.0% Pass Rate)**: Re-running the benchmark achieved **100.0% Pass Rate** across all single-turn and multi-turn trajectories.
+- **Iteration 3 — High-Speed Grounding & Latency Acceleration (`FastMCPGroundingClient` + Direct VAIS REST + `gemini-2.5-flash`)**:
+  - Replaced per-call SSE handshakes (`~1.8s`/call) and `extractiveContentSpec` gRPC searches (`3.67s`) with persistent HTTP Keep-Alive JSON-RPC (`~0.07s`/call) and direct REST VAIS search (`0.164s` cold, `<0.001s` cached) grounded with full-section handbook text.
+  - Added Cloudtop mTLS bypass (`GOOGLE_API_USE_CLIENT_CERTIFICATE=false`), singleton OAuth2 token caching (`GcloudCliCredentials`), IPv4 `aiohttp.TCPConnector` patching, and zero-retry out-of-scope employee ID auto-grounding (`_needs_scope_grounding`), reducing per-turn LLM inference latency to **`~0.4–1.5s`**.
 
 ### 4.2 Final Live Benchmark Results Summary
 

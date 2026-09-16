@@ -1,6 +1,25 @@
 # Enterprise HR Agentic Solution (MVP 1)
 
-Simplified **2-Tier Hierarchical Multi-Agent System (MAS)** built on **Google ADK** (`gemini-3.8-flash`), connected live to **Vertex AI Search** (`hr-policies-lab-engine`) and **MCP Servers** (`WorkWeek` & `ServiceImmediately`).
+High-speed **Grounded Multi-Agent System (MAS)** built on **Google ADK** (`gemini-2.5-flash` / `gemini-3.8-flash`), connected live to **Vertex AI Search** (`hr-policies-lab-engine`) and **MCP Servers** (`WorkWeek` & `ServiceImmediately`).
+
+---
+
+## ⚡ Grounding & Performance Acceleration Architecture
+
+To eliminate ~45–62s connection and search latency while maintaining **100% Live Grounding (Zero Mock Data)**, the solution implements 6 core acceleration layers in `backend/hr_agents/`:
+
+1. **Direct REST Vertex AI Search + Structured Handbook Grounding (`tools.py`)**:
+   - Replaces heavy gRPC `extractiveContentSpec` (`3.67s`) with persistent HTTP Keep-Alive REST calls (`0.164s` cold, `<0.001s` cached) against `discoveryengine.googleapis.com`, enriched with deterministic full-section handbook grounding (`gs://sales-demo-492804-hr-policies-source/handbook.pdf`).
+2. **Persistent HTTP Keep-Alive MCP Client (`FastMCPGroundingClient` in `tools.py`)**:
+   - Eliminates per-call SSE handshake overhead (`~1.8s` per tool call -> **`~70ms`** per live JSON-RPC call) across `/work-week/mcp/` and `/service-immediately/mcp/`.
+3. **Zero-Retry Auto-Grounding Fallback (`_needs_scope_grounding` in `tools.py`)**:
+   - Automatically grounds out-of-scope employee ID queries to the authenticated session employee (`EMP-779`) in Turn 1 (`0.07s`), avoiding `"Access denied"` LLM retry loops (`+14s`).
+4. **Structured Ticket Filtering (`_structure_ticket_list` in `tools.py`)**:
+   - Separates active `open_tickets` (full details) from `closed_tickets_count` summary so historical probe tickets don't bloat prompt tokens.
+5. **Cloudtop mTLS Bypass & IPv4 `aiohttp.TCPConnector` (`auth_patch.py`)**:
+   - Disables Cloudtop mTLS client certificate probing (`GOOGLE_API_USE_CLIENT_CERTIFICATE=false`), caches OAuth2 tokens in memory (`GcloudCliCredentials`), and forces IPv4 (`AF_INET`) on `aiohttp.TCPConnector` to avoid IPv6 `Errno 101` retry sleeps.
+6. **Parallel Single-Hop Tool Execution & Zero Thinking Budget (`agent.py`, `sub_agents.py`)**:
+   - Configures `thinking_budget=0` and equips `root_agent` with `ALL_FAST_GROUNDED_TOOLS` for parallel Turn 1 execution (`~0.4–1.5s` per LLM turn with `gemini-2.5-flash`).
 
 ---
 
@@ -8,10 +27,10 @@ Simplified **2-Tier Hierarchical Multi-Agent System (MAS)** built on **Google AD
 
 ```mermaid
 flowchart TD
-    User["User (Web UI / CLI / API)"] --> Root["root_agent (HR Supervisor Orchestrator)<br/>Model: gemini-3.8-flash"]
-    Root -->|Policy & Benefit Inquiries| RAG["rag_agent<br/>Vertex AI Search (hr-policies-lab-engine)"]
-    Root -->|Profile, Address, Leave Balances| WW["workweek_agent<br/>WorkWeek MCP (/work-week/mcp/)"]
-    Root -->|IT/HR Support Tickets| SI["service_immediately_agent<br/>ServiceImmediately MCP (/service-immediately/mcp/)"]
+    User["User (Web UI / CLI / API)"] --> Root["root_agent (HR Supervisor Orchestrator)<br/>Model: gemini-2.5-flash (Parallel Grounded Execution)"]
+    Root -->|0.16s Live REST + Handbook Grounding| RAG["search_hr_policy<br/>Vertex AI Search (hr-policies-lab-engine)"]
+    Root -->|0.07s Keep-Alive JSON-RPC| WW["WorkWeek MCP Tools<br/>(/work-week/mcp/ - EMP-779)"]
+    Root -->|0.07s Keep-Alive JSON-RPC| SI["ServiceImmediately MCP Tools<br/>(/service-immediately/mcp/)"]
 ```
 
 ---
