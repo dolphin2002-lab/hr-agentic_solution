@@ -35,13 +35,23 @@ flowchart TD
 
 ---
 
-## ☁️ Live Cloud Run Deployment (`sales-demo-492804` / `us-central1`)
+## ☁️ Live Cloud Run Deployments & Gemini Enterprise Registration
 
-The agent is deployed and serving live traffic on **Google Cloud Run** with both ADK Web UI and REST API enabled:
+### 1. 🌟 Enterprise HR Agentic Portal Web UI (Recommended for Visual Testing)
+A custom, modern glassmorphic Web Application featuring real-time WorkWeek MCP Employee Profile cards, visual Leave Balance progress meters, ServiceImmediately MCP Ticket cards with sequential status action buttons, and 5 one-click ADK scenario chips:
+- **Public Cloud Run Portal URL**: [https://hr-agentic-portal-176121361862.us-central1.run.app](https://hr-agentic-portal-176121361862.us-central1.run.app)
+- **Local Cloudtop Portal URL**: [http://tom-cloudtop-01.c.googlers.com:8080](http://tom-cloudtop-01.c.googlers.com:8080)
+- **A2A Agent Card Endpoint**: [https://hr-agentic-portal-176121361862.us-central1.run.app/.well-known/agent-card.json](https://hr-agentic-portal-176121361862.us-central1.run.app/.well-known/agent-card.json)
 
-- **Live Cloud Run URL (Web UI & API)**: [https://hr-agentic-solution-176121361862.us-central1.run.app](https://hr-agentic-solution-176121361862.us-central1.run.app)
-- **Service Name**: `hr-agentic-solution`
-- **Active Revision**: `hr-agentic-solution-00001-hgh`
+### 2. 🤖 Gemini Enterprise (Agentspace) Registration (`BPO Sales Demo`)
+Registered and **ENABLED** as an A2A Agent in Google Cloud Gemini Enterprise (Agentspace):
+- **Gemini Enterprise App**: `BPO Sales Demo` (`projects/176121361862/locations/global/collections/default_collection/engines/bpo-sales-demo_1775749094781`)
+- **Registered Agent Resource Name**: `projects/176121361862/locations/global/collections/default_collection/engines/bpo-sales-demo_1775749094781/assistants/default_assistant/agents/2616594270755066337`
+- **Display Name**: `Altostrat Singapore HR Coordinator Agent`
+- **Google Cloud Console Link**: [Gemini Enterprise Agent Gallery (`sales-demo-492804`)](https://console.cloud.google.com/gen-app-builder/engines/bpo-sales-demo_1775749094781/agents?project=sales-demo-492804)
+
+### 3. 🛠️ ADK Standard Dev UI & REST API (`hr-agentic-solution`)
+- **Live Cloud Run ADK Dev UI**: [https://hr-agentic-solution-176121361862.us-central1.run.app](https://hr-agentic-solution-176121361862.us-central1.run.app)
 
 ### Redeploy Command
 ```bash

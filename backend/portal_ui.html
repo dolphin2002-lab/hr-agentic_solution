@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ja" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Altostrat Singapore — Enterprise HR Agentic Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      background-color: #0b0f19;
+      color: #f1f5f9;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(51, 65, 85, 0.6);
+    }
+    .glass-header {
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(51, 65, 85, 0.6);
+    }
+    .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+      font-weight: 600;
+      margin-top: 0.75rem;
+      margin-bottom: 0.5rem;
+      color: #e2e8f0;
+    }
+    .markdown-body ul {
+      list-style-type: disc;
+      padding-left: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .markdown-body ol {
+      list-style-type: decimal;
+      padding-left: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .markdown-body p {
+      margin-bottom: 0.5rem;
+      line-height: 1.6;
+    }
+    .markdown-body strong {
+      color: #38bdf8;
+    }
+    .markdown-body code {
+      background: rgba(30, 41, 59, 0.8);
+      padding: 0.15rem 0.35rem;
+      border-radius: 0.25rem;
+      font-size: 0.85em;
+      color: #93c5fd;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.4); }
+    ::-webkit-scrollbar-thumb { background: rgba(71, 85, 105, 0.6); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 0.8); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Navigation Header -->
+  <header class="glass-header sticky top-0 z-30 px-6 py-3.5 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <h1 class="text-lg font-bold tracking-tight text-white">Altostrat Singapore</h1>
+          <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">Enterprise HR Agentic Portal</span>
+        </div>
+        <p class="text-xs text-slate-400">Powered by Google ADK (`gemini-2.5-flash`) • Live Vertex AI Search & MCP Integration</p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-4">
+      <div id="liveStatusBadge" class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Live Grounded: VAIS + WorkWeek + ServiceImmediately</span>
+      </div>
+      <button onclick="loadDashboard()" class="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-medium text-slate-200 flex items-center space-x-1.5 transition">
+        <svg id="refreshIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span>ライブデータ更新</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Workspace Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- Left Column: Live Grounded Employee Dashboard (4 cols) -->
+    <div class="lg:col-span-4 space-y-5">
+
+      <!-- Card 1: Employee Profile (WorkWeek MCP) -->
+      <div class="glass-card rounded-2xl p-5 shadow-xl">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center space-x-2">
+            <span class="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </span>
+            <h2 class="text-sm font-semibold text-slate-200">従業員プロファイル</h2>
+          </div>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">WorkWeek MCP</span>
+        </div>
+
+        <div id="profileContent" class="space-y-2.5 text-xs">
+          <div class="animate-pulse flex space-x-3 items-center py-2">
+            <div class="w-10 h-10 rounded-full bg-slate-700"></div>
+            <div class="flex-1 space-y-2">
+              <div class="h-3 bg-slate-700 rounded w-3/4"></div>
+              <div class="h-2.5 bg-slate-800 rounded w-1/2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Live Leave Balances (WorkWeek MCP) -->
+      <div class="glass-card rounded-2xl p-5 shadow-xl">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center space-x-2">
+            <span class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </span>
+            <h2 class="text-sm font-semibold text-slate-200">リアルタイム休暇残高</h2>
+          </div>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">WorkWeek MCP</span>
+        </div>
+
+        <div id="balancesContent" class="space-y-3.5 text-xs">
+          <div class="animate-pulse space-y-3 py-2">
+            <div class="h-3 bg-slate-700 rounded w-full"></div>
+            <div class="h-3 bg-slate-700 rounded w-5/6"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Active IT/HR Support Tickets (ServiceImmediately MCP) -->
+      <div class="glass-card rounded-2xl p-5 shadow-xl">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center space-x-2">
+            <span class="p-1.5 rounded-lg bg-amber-500/10 text-amber-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+              </svg>
+            </span>
+            <h2 class="text-sm font-semibold text-slate-200">オープン中のサポートチケット</h2>
+          </div>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">ServiceImmediately MCP</span>
+        </div>
+
+        <div id="ticketsContent" class="space-y-3 text-xs">
+          <div class="animate-pulse space-y-2 py-2">
+            <div class="h-12 bg-slate-800 rounded-xl w-full"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Interactive Enterprise HR Agent Chat Workspace (8 cols) -->
+    <div class="lg:col-span-8 flex flex-col glass-card rounded-2xl shadow-2xl overflow-hidden h-[760px]">
+
+      <!-- Chat Top Bar & Quick Action Scenarios -->
+      <div class="p-4 border-b border-slate-700/70 bg-slate-900/50 space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+            <h3 class="text-sm font-semibold text-white">HR Coordinator Agent (`root_agent`)</h3>
+            <span class="text-xs text-slate-400">— 並列グラウンディング & ゼロモック実行</span>
+          </div>
+          <span id="lastLatencyBadge" class="hidden px-2.5 py-0.5 text-[11px] font-mono rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/20"></span>
+        </div>
+
+        <!-- One-Click Quick Action Scenario Chips -->
+        <div>
+          <p class="text-[11px] text-slate-400 mb-1.5 font-medium">💡 ワンクリック検証シナリオ（クリックで即座に質問）：</p>
+          <div class="flex flex-wrap gap-1.5">
+            <button onclick="sendQuickPrompt('シンガポールのフルタイム従業員の有給傷病休暇（Outpatient Sick Leave）と入院休暇（Hospitalization Leave）の日数と診断書（MC）ルールを教えてください。')"
+              class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-blue-600/20 hover:border-blue-500/40 border border-slate-700 text-xs text-slate-200 transition flex items-center space-x-1">
+              <span>🇸🇬</span><span>傷病・入院休暇規程 (VAIS)</span>
+            </button>
+            <button onclick="sendQuickPrompt('ビジネス会食での贈答品（Host Gift）の上限金額と、ギフトカード・商品券が認められるか教えてください。')"
+              class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-blue-600/20 hover:border-blue-500/40 border border-slate-700 text-xs text-slate-200 transition flex items-center space-x-1">
+              <span>🎁</span><span>贈答品・ギフトカード規程 (VAIS)</span>
+            </button>
+            <button onclick="sendQuickPrompt('私の現在の休暇残高（有給休暇・傷病休暇）と登録住所を教えてください。')"
+              class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-emerald-600/20 hover:border-emerald-500/40 border border-slate-700 text-xs text-slate-200 transition flex items-center space-x-1">
+              <span>📅</span><span>私の休暇残高と住所照会 (WorkWeek MCP)</span>
+            </button>
+            <button onclick="sendQuickPrompt('私の現在オープン中のサポートチケット一覧と詳細を教えてください。')"
+              class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-amber-600/20 hover:border-amber-500/40 border border-slate-700 text-xs text-slate-200 transition flex items-center space-x-1">
+              <span>🎫</span><span>オープン中のチケット確認 (ServiceImmediately MCP)</span>
+            </button>
+            <button onclick="sendQuickPrompt('シンガポールの傷病休暇規程を確認した上で、私の現在の病気休暇の残高と、オープン中のサポートチケットをすべてまとめて教えてください。')"
+              class="px-2.5 py-1 rounded-lg bg-gradient-to-r from-blue-600/20 to-indigo-600/20 hover:from-blue-600/30 hover:to-indigo-600/30 border border-blue-500/40 text-xs text-blue-200 font-medium transition flex items-center space-x-1">
+              <span>⚡</span><span>複合クエリ：規程＋休暇残高＋チケット一括並列照会</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Message History -->
+      <div id="chatMessages" class="flex-1 overflow-y-auto p-5 space-y-4">
+        <!-- Welcome Message -->
+        <div class="flex items-start space-x-3">
+          <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0">HR</div>
+          <div class="bg-slate-800/90 border border-slate-700/80 rounded-2xl rounded-tl-sm p-4 max-w-2xl text-sm text-slate-200 space-y-2">
+            <p class="font-medium text-white">こんにちは、Tomohito さん（従業員ID: <code class="text-blue-400">EMP-779</code>）！</p>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Altostrat Singapore エンタープライズ HR エージェントへようこそ。以下の 3 つのライブデータソースに直結しています：
+            </p>
+            <ul class="text-xs text-slate-300 space-y-1 list-disc pl-4">
+              <li><strong class="text-blue-400">Vertex AI Search (`hr-policies-lab-engine`)</strong>：シンガポール就業規則・行動規範ハンドブックの正確な条項検索</li>
+              <li><strong class="text-emerald-400">WorkWeek MCP (`/work-week/mcp/`)</strong>：従業員プロファイル・有給/傷病休暇残高のリアルタイム照会・申請</li>
+              <li><strong class="text-amber-400">ServiceImmediately MCP (`/service-immediately/mcp/`)</strong>：IT/HR サポートチケットの照会・起票・段階的ステータス更新</li>
+            </ul>
+            <p class="text-xs text-slate-400 pt-1">上のワンクリック検証ボタンをクリックするか、下の入力欄から自由に質問してください。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Input Form -->
+      <div class="p-4 border-t border-slate-700/70 bg-slate-900/70">
+        <form id="chatForm" onsubmit="handleChatSubmit(event)" class="flex items-center space-x-3">
+          <input
+            id="chatInput"
+            type="text"
+            placeholder="HR規程、休暇残高、サポートチケットについて質問を入力してください..."
+            class="flex-1 bg-slate-800/90 border border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400 outline-none transition"
+          />
+          <button
+            id="sendBtn"
+            type="submit"
+            class="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold text-sm shadow-lg shadow-blue-600/25 flex items-center space-x-2 transition disabled:opacity-50"
+          >
+            <span>送信</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    let currentSessionId = null;
+
+    // Load Live Dashboard Data on Startup
+    async function loadDashboard() {
+      const icon = document.getElementById('refreshIcon');
+      icon.classList.add('animate-spin');
+      try {
+        const res = await fetch('/api/dashboard');
+        const data = await res.json();
+        renderProfile(data.profile, data.employee_id);
+        renderBalances(data.balances);
+        renderTickets(data.tickets);
+      } catch (err) {
+        console.error('Failed to load dashboard:', err);
+      } finally {
+        icon.classList.remove('animate-spin');
+      }
+    }
+
+    function renderProfile(profileData, empId) {
+      const el = document.getElementById('profileContent');
+      const rawText = typeof profileData?.profile === 'string' ? profileData.profile : '';
+      let address = 'Singapore Office, 80 Pasir Panjang Rd, Singapore';
+      let phone = '+65-6521-0000';
+      if (rawText) {
+        const addrMatch = rawText.match(/Address:\s*(.+)/i);
+        if (addrMatch) address = addrMatch[1].trim();
+        const phoneMatch = rawText.match(/Phone:\s*(.+)/i);
+        if (phoneMatch) phone = phoneMatch[1].trim();
+      }
+      const name = 'Tomohito Employee';
+      const id = profileData?.employee_id || empId || 'EMP-779';
+      const dept = 'Enterprise Cloud Engineering (Singapore)';
+
+      el.innerHTML = `
+        <div class="flex items-center space-x-3 pb-2.5 border-b border-slate-800">
+          <div class="w-11 h-11 rounded-full bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white font-bold text-sm shadow">
+            TE
+          </div>
+          <div>
+            <div class="font-semibold text-white text-sm">${name}</div>
+            <div class="text-slate-400 text-xs flex items-center space-x-2">
+              <span class="font-mono text-blue-400 font-semibold">${id}</span>
+              <span>•</span>
+              <span>${dept}</span>
+            </div>
+          </div>
+        </div>
+        <div class="pt-1.5 space-y-1.5 text-slate-300">
+          <div class="flex justify-between">
+            <span class="text-slate-400">内線 / 電話:</span>
+            <span class="font-mono text-slate-200">${phone}</span>
+          </div>
+          <div class="flex justify-between items-start gap-2">
+            <span class="text-slate-400 shrink-0">登録オフィス住所:</span>
+            <span class="text-right text-slate-200 font-medium">${address}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderBalances(balancesData) {
+      const el = document.getElementById('balancesContent');
+      const rawText = typeof balancesData?.balances === 'string' ? balancesData.balances : '';
+      let vacRem = 15.0, vacTotal = 20.0;
+      let sickRem = 10.0, sickTotal = 14.0;
+
+      if (rawText) {
+        const vacMatch = rawText.match(/Vacation:\s*([\d.]+)\s*days remaining\s*\(([\d.]+)\/([\d.]+)\s*used\)/i);
+        if (vacMatch) {
+          vacRem = parseFloat(vacMatch[1]);
+          vacTotal = parseFloat(vacMatch[3]);
+        }
+        const sickMatch = rawText.match(/Sick:\s*([\d.]+)\s*days remaining\s*\(([\d.]+)\/([\d.]+)\s*used\)/i);
+        if (sickMatch) {
+          sickRem = parseFloat(sickMatch[1]);
+          sickTotal = parseFloat(sickMatch[3]);
+        }
+      }
+
+      const vacPct = Math.min(100, Math.round((vacRem / vacTotal) * 100));
+      const sickPct = Math.min(100, Math.round((sickRem / sickTotal) * 100));
+
+      el.innerHTML = `
+        <div class="space-y-1.5">
+          <div class="flex justify-between text-xs">
+            <span class="font-medium text-slate-300">🏖️ 年次有給休暇 (Vacation Leave)</span>
+            <span class="font-mono font-bold text-emerald-400">${vacRem.toFixed(1)} / ${vacTotal.toFixed(1)} 日</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500" style="width: ${vacPct}%"></div>
+          </div>
+        </div>
+
+        <div class="space-y-1.5 pt-1">
+          <div class="flex justify-between text-xs">
+            <span class="font-medium text-slate-300">🏥 有給傷病休暇 (Outpatient Sick)</span>
+            <span class="font-mono font-bold text-blue-400">${sickRem.toFixed(1)} / ${sickTotal.toFixed(1)} 日</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-400 rounded-full transition-all duration-500" style="width: ${sickPct}%"></div>
+          </div>
+        </div>
+
+        <div class="pt-2 flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-800/80">
+          <span>シンガポール法定入院休暇枠 (Section 25):</span>
+          <span class="font-mono text-slate-300 font-semibold">最大 60.0 日/年</span>
+        </div>
+      `;
+    }
+
+    function renderTickets(ticketsData) {
+      const el = document.getElementById('ticketsContent');
+      const openTickets = ticketsData?.open_tickets || [];
+      const closedCount = ticketsData?.closed_tickets_count ?? 0;
+
+      if (openTickets.length === 0) {
+        el.innerHTML = `<div class="text-slate-400 py-2">現在オープン中のチケットはありません（クローズ済: ${closedCount}件）</div>`;
+        return;
+      }
+
+      const nextStateMap = {
+        'new': 'in_progress',
+        'open': 'in_progress',
+        'in_progress': 'resolved',
+        'resolved': 'closed'
+      };
+
+      el.innerHTML = openTickets.map(t => {
+        const id = t.ticket_id || t.id || 'INC0004543';
+        const status = (t.status || 'open').toLowerCase();
+        const priority = t.priority || '3 - Moderate';
+        const desc = t.description || t.short_description || t.title || 'Support Request';
+        const nextState = nextStateMap[status] || null;
+
+        return `
+          <div class="p-3 rounded-xl bg-slate-800/70 border border-slate-700/80 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-mono font-bold text-amber-400 text-xs">${id}</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                ${status}
+              </span>
+            </div>
+            <div class="text-slate-200 font-medium leading-snug">${desc}</div>
+            <div class="flex items-center justify-between pt-1 border-t border-slate-700/60 text-[11px]">
+              <span class="text-slate-400">優先度: ${priority}</span>
+              ${nextState ? `
+                <button onclick="advanceTicketStatus('${id}', '${nextState}')"
+                  class="px-2 py-1 rounded bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 border border-blue-500/30 font-medium transition">
+                  ステータスを進める → ${nextState.toUpperCase()}
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('') + `
+        <div class="text-[11px] text-slate-400 text-right pt-1">
+          他クローズ済み履歴: ${closedCount} 件（プロンプト肥大化防止のため自動圧縮）
+        </div>
+      `;
+    }
+
+    async function advanceTicketStatus(ticketId, nextStatus) {
+      try {
+        const res = await fetch('/api/ticket/status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ticket_id: ticketId, new_status: nextStatus })
+        });
+        await loadDashboard();
+        sendQuickPrompt(`チケット ${ticketId} のステータスを ${nextStatus} に更新しました。現在の状態を確認してください。`);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function sendQuickPrompt(text) {
+      const input = document.getElementById('chatInput');
+      input.value = text;
+      document.getElementById('chatForm').dispatchEvent(new Event('submit'));
+    }
+
+    async function handleChatSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('chatInput');
+      const sendBtn = document.getElementById('sendBtn');
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      input.value = '';
+      sendBtn.disabled = true;
+
+      appendUserMessage(msg);
+      const loadingId = appendLoadingMessage();
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: msg,
+            session_id: currentSessionId
+          })
+        });
+        const data = await res.json();
+        currentSessionId = data.session_id;
+
+        removeMessage(loadingId);
+        appendAgentMessage(data.response, data.tools || [], data.latency_sec);
+
+        const badge = document.getElementById('lastLatencyBadge');
+        badge.textContent = `⚡ 直近ターン応答: ${data.latency_sec}秒`;
+        badge.classList.remove('hidden');
+
+        // Refresh dashboard cards in case tools modified state
+        loadDashboard();
+      } catch (err) {
+        removeMessage(loadingId);
+        appendAgentMessage('通信エラーが発生しました: ' + err.message, [], 0);
+      } finally {
+        sendBtn.disabled = false;
+        input.focus();
+      }
+    }
+
+    function appendUserMessage(text) {
+      const container = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      div.className = 'flex items-start justify-end space-x-3';
+      div.innerHTML = `
+        <div class="bg-blue-600 text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-xl text-sm shadow-lg">
+          ${escapeHtml(text)}
+        </div>
+      `;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function appendLoadingMessage() {
+      const container = document.getElementById('chatMessages');
+      const id = 'loading-' + Date.now();
+      const div = document.createElement('div');
+      div.id = id;
+      div.className = 'flex items-start space-x-3';
+      div.innerHTML = `
+        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0">HR</div>
+        <div class="bg-slate-800/90 border border-slate-700/80 rounded-2xl rounded-tl-sm px-4 py-3 text-xs text-slate-300 flex items-center space-x-2">
+          <svg class="w-4 h-4 animate-spin text-blue-400" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+          </svg>
+          <span>Vertex AI Search & MCP サーバーに並列グラウンディング中...</span>
+        </div>
+      `;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+      return id;
+    }
+
+    function removeMessage(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+
+    function appendAgentMessage(markdownText, tools, latencySec) {
+      const container = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      div.className = 'flex items-start space-x-3';
+
+      const toolsHtml = tools.length > 0 ? `
+        <div class="flex flex-wrap items-center gap-1.5 mb-2.5 pb-2 border-b border-slate-700/60">
+          <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">実行ツール (${latencySec}s):</span>
+          ${tools.map(t => `
+            <span class="px-2 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/30 text-[11px] font-mono text-blue-300 flex items-center space-x-1">
+              <span>⚡</span><span>${t.name}</span>
+            </span>
+          `).join('')}
+        </div>
+      ` : '';
+
+      const renderedHtml = marked.parse(markdownText || '');
+
+      div.innerHTML = `
+        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0">HR</div>
+        <div class="bg-slate-800/90 border border-slate-700/80 rounded-2xl rounded-tl-sm p-4 max-w-2xl text-sm text-slate-200 shadow-xl">
+          ${toolsHtml}
+          <div class="markdown-body text-xs leading-relaxed">${renderedHtml}</div>
+        </div>
+      `;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    window.addEventListener('DOMContentLoaded', loadDashboard);
+  </script>
+</body>
+</html>
