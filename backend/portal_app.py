@@ -4,7 +4,7 @@ import asyncio
 import os
 import time
 from typing import Any, Dict, List, Optional
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
@@ -16,6 +16,8 @@ ensure_vertex_auth()
 from google.adk.runners import InMemoryRunner
 from google.genai import types
 from backend.hr_agents import root_agent
+from backend.hr_agents.agent_gateway import agent_gateway
+from backend.hr_agents.security_guardrails import guardrails_engine
 from backend.hr_agents.tools import (
     get_authenticated_session_employee_id,
     get_personal_info as get_employee_profile,
@@ -26,7 +28,7 @@ from backend.hr_agents.tools import (
 
 app = FastAPI(
     title="Altostrat Singapore Enterprise HR Portal & Agent API",
-    version="1.5.0",
+    version="1.6.0",
 )
 
 app.add_middleware(
@@ -46,11 +48,29 @@ class ChatRequest(BaseModel):
   message: str
   user_id: Optional[str] = None
   session_id: Optional[str] = None
+  target_agent: Optional[str] = "root_agent"
 
 
 class TicketUpdateRequest(BaseModel):
   ticket_id: str
   new_status: str
+
+
+class SecurityTestRequest(BaseModel):
+  text: str
+
+
+@app.get("/api/gateway/status")
+async def get_agent_gateway_status():
+  """Returns Agent Gateway configuration, downstream agent registry, and recent audit trail."""
+  return agent_gateway.get_gateway_status()
+
+
+@app.post("/api/security/test")
+async def test_security_guardrails(req: SecurityTestRequest):
+  """Tests Model Armor & Cloud DLP masking directly on sample input text."""
+  scan_res = guardrails_engine.inspect_and_mask_input(req.text)
+  return scan_res
 
 
 @app.get("/api/dashboard")
@@ -73,6 +93,7 @@ async def get_dashboard_data():
       "profile": profile if not isinstance(profile, Exception) else {"error": str(profile)},
       "balances": balances if not isinstance(balances, Exception) else {"error": str(balances)},
       "tickets": tickets if not isinstance(tickets, Exception) else {"error": str(tickets)},
+      "gateway_status": agent_gateway.get_gateway_status(),
       "latency_ms": round((time.time() - t0) * 1000, 1),
   }
 
@@ -87,10 +108,46 @@ async def update_ticket_endpoint(req: TicketUpdateRequest):
 
 
 @app.post("/api/chat")
-async def chat_endpoint(req: ChatRequest):
-  """Executes an ADK agent turn and returns response text, invoked tool names, and latency."""
+async def chat_endpoint(req: ChatRequest, request: Request):
+  """Executes Agent Gateway evaluation, Model Armor / Cloud DLP masking, and ADK agent turn."""
   t0 = time.time()
   user_id = req.user_id or get_authenticated_session_employee_id()
+  target_agent = req.target_agent or "root_agent"
+
+  # 1. Evaluate Agent Gateway Routing & User Context (Prepared Pass-Through Mode)
+  gateway_eval = agent_gateway.evaluate_routing(
+      user_id=user_id,
+      message=req.message,
+      target_agent=target_agent,
+      headers=dict(request.headers),
+  )
+
+  # 2. Model Armor & Cloud DLP Input Scan
+  input_scan = guardrails_engine.inspect_and_mask_input(req.message)
+
+  if input_scan["blocked"]:
+    latency_sec = round(time.time() - t0, 2)
+    rule_info = input_scan["model_armor_findings"][0]
+    blocked_msg = (
+        "🛡️ **[Model Armor セキュリティ遮断 (SDD RSK-02)]**\n\n"
+        "入力テキストにプロンプトインジェクションまたはシステム命令の上書きパターンが検出されたため、"
+        "AIセキュリティ＆ガードレール層（Model Armor）によりリクエストを遮断しました。\n\n"
+        f"- **検出ルールID**: `{rule_info['rule_id']}`\n"
+        f"- **脅威カテゴリ**: {rule_info['description']}\n"
+        f"- **Agent Gateway 監査ID**: `{gateway_eval['audit_id']}` (`{gateway_eval['policy_mode']}`)"
+    )
+    return {
+        "session_id": req.session_id or "blocked-session",
+        "user_id": user_id,
+        "response": blocked_msg,
+        "tools": [],
+        "security_guardrails": input_scan,
+        "agent_gateway": gateway_eval,
+        "latency_sec": latency_sec,
+    }
+
+  # Use DLP-sanitized text for LLM execution
+  sanitized_user_message = input_scan["sanitized_text"]
 
   session_id = req.session_id or _SESSIONS.get(user_id)
   if not session_id:
@@ -101,7 +158,7 @@ async def chat_endpoint(req: ChatRequest):
     _SESSIONS[user_id] = session_id
 
   content = types.Content(
-      role="user", parts=[types.Part.from_text(text=req.message)]
+      role="user", parts=[types.Part.from_text(text=sanitized_user_message)]
   )
 
   invoked_tools: List[Dict[str, Any]] = []
@@ -120,12 +177,36 @@ async def chat_endpoint(req: ChatRequest):
         if event.is_final_response() and part.text:
           response_text += part.text
 
+  # 3. Cloud DLP Output Scan (prevent accidental PII leakage in LLM output)
+  output_scan = guardrails_engine.inspect_and_mask_output(response_text)
+  final_response_text = output_scan["sanitized_text"]
+
+  # Prepend clear DLP masking banner if PII was caught and masked in user input
+  if input_scan["dlp_masked"]:
+    dlp_summary = ", ".join(
+        f"`{f['label']}` ➔ `{f['masked_as']}`" for f in input_scan["dlp_findings"]
+    )
+    dlp_banner = (
+        f"> 🛡️ **[Cloud DLP & Model Armor 自動マスキング保護済]**\n"
+        f"> 入力された個人情報（SPII）を検出し、LLM およびログへ送信する前に自動墨消し（De-identification）を実行しました：{dlp_summary}\n"
+        f"> **マスキング後の送信テキスト**: `{sanitized_user_message}`\n\n"
+    )
+    final_response_text = dlp_banner + final_response_text
+
   latency_sec = round(time.time() - t0, 2)
   return {
       "session_id": session_id,
       "user_id": user_id,
-      "response": response_text,
+      "response": final_response_text,
       "tools": invoked_tools,
+      "security_guardrails": {
+          "model_armor_status": input_scan["model_armor_status"],
+          "dlp_masked": input_scan["dlp_masked"] or output_scan["dlp_masked"],
+          "dlp_findings": input_scan["dlp_findings"] + output_scan["dlp_findings"],
+          "sanitized_input": sanitized_user_message,
+          "scan_latency_ms": round(input_scan["latency_ms"] + output_scan["latency_ms"], 2),
+      },
+      "agent_gateway": gateway_eval,
       "latency_sec": latency_sec,
   }
 
@@ -152,10 +233,11 @@ async def get_a2a_agent_card():
       "description": (
           "Enterprise HR Agentic Solution grounded in Singapore HR Policy"
           " Handbook (Vertex AI Search), WorkWeek HCM MCP (Leave Balances &"
-          " Profile), and ServiceImmediately ITSM MCP (Support Tickets)."
+          " Profile), and ServiceImmediately ITSM MCP (Support Tickets) with"
+          " Model Armor / Cloud DLP & Agent Gateway governance."
       ),
       "url": f"{service_url}/a2a",
-      "version": "1.5.0",
+      "version": "1.6.0",
       "capabilities": {
           "streaming": False,
           "pushNotifications": False,
@@ -202,13 +284,11 @@ async def get_a2a_agent_card():
 
 @app.post("/a2a")
 @app.post("/a2a/hr_agents")
-async def handle_a2a_jsonrpc(payload: Dict[str, Any]):
+async def handle_a2a_jsonrpc(payload: Dict[str, Any], request: Request):
   """Handles A2A JSON-RPC 2.0 requests (message/send, tasks/send) from Gemini Enterprise."""
   rpc_id = payload.get("id", "1")
-  method = payload.get("method", "")
   params = payload.get("params", {})
 
-  # Extract user message text from A2A message/send or tasks/send payload
   user_text = ""
   msg_obj = params.get("message", {})
   for part in msg_obj.get("parts", []):
@@ -220,6 +300,24 @@ async def handle_a2a_jsonrpc(payload: Dict[str, Any]):
   user_id = get_authenticated_session_employee_id()
   task_id = params.get("id") or f"task-{int(time.time())}"
 
+  # Evaluate Agent Gateway & Security Guardrails
+  agent_gateway.evaluate_routing(user_id=user_id, message=user_text, target_agent="root_agent")
+  input_scan = guardrails_engine.inspect_and_mask_input(user_text)
+  if input_scan["blocked"]:
+    return {
+        "jsonrpc": "2.0",
+        "id": rpc_id,
+        "result": {
+            "id": task_id,
+            "status": {"state": "completed"},
+            "artifacts": [{
+                "parts": [{"type": "text", "text": "🛡️ Model Armor Security Block: Prompt injection detected."}]
+            }],
+        },
+    }
+
+  sanitized_text = input_scan["sanitized_text"]
+
   session_id = _SESSIONS.get(user_id)
   if not session_id:
     session = await _RUNNER.session_service.create_session(
@@ -229,7 +327,7 @@ async def handle_a2a_jsonrpc(payload: Dict[str, Any]):
     _SESSIONS[user_id] = session_id
 
   content = types.Content(
-      role="user", parts=[types.Part.from_text(text=user_text)]
+      role="user", parts=[types.Part.from_text(text=sanitized_text)]
   )
   response_text = ""
   async for event in _RUNNER.run_async(
@@ -240,6 +338,8 @@ async def handle_a2a_jsonrpc(payload: Dict[str, Any]):
         if event.is_final_response() and part.text:
           response_text += part.text
 
+  output_scan = guardrails_engine.inspect_and_mask_output(response_text)
+
   return {
       "jsonrpc": "2.0",
       "id": rpc_id,
@@ -248,17 +348,13 @@ async def handle_a2a_jsonrpc(payload: Dict[str, Any]):
           "status": {"state": "completed"},
           "artifacts": [
               {
-                  "name": "response",
-                  "parts": [{"type": "text", "text": response_text}],
+                  "parts": [
+                      {
+                          "type": "text",
+                          "text": output_scan["sanitized_text"],
+                      }
+                  ]
               }
-          ],
-          "history": [
-              msg_obj,
-              {
-                  "role": "agent",
-                  "parts": [{"type": "text", "text": response_text}],
-              },
           ],
       },
   }
-

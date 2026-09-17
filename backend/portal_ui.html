@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja" class="dark">
+<html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,26 +8,46 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --google-blue: #4285F4;
+      --google-blue-dark: #1A73E8;
+      --google-red: #EA4335;
+      --google-yellow: #FBBC05;
+      --google-green: #34A853;
+      --google-text: #202124;
+      --google-text-secondary: #5F6368;
+      --google-border: #DADCE0;
+    }
     body {
       font-family: 'Inter', 'Noto Sans JP', sans-serif;
-      background-color: #0b0f19;
-      color: #f1f5f9;
+      background-color: #F8F9FA;
+      color: #202124;
+    }
+    .google-top-stripe {
+      height: 4px;
+      background: linear-gradient(
+        to right,
+        #4285F4 0%, #4285F4 25%,
+        #EA4335 25%, #EA4335 50%,
+        #FBBC05 50%, #FBBC05 75%,
+        #34A853 75%, #34A853 100%
+      );
     }
     .glass-card {
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(51, 65, 85, 0.6);
+      background: #FFFFFF;
+      border: 1px solid #DADCE0;
+      box-shadow: 0 1px 3px rgba(60, 64, 67, 0.08), 0 1px 2px rgba(60, 64, 67, 0.06);
     }
     .glass-header {
-      background: rgba(11, 15, 25, 0.85);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(51, 65, 85, 0.6);
+      background: #FFFFFF;
+      border-bottom: 1px solid #DADCE0;
+      box-shadow: 0 1px 2px rgba(60, 64, 67, 0.05);
     }
     .markdown-body h1, .markdown-body h2, .markdown-body h3 {
       font-weight: 600;
       margin-top: 0.75rem;
       margin-bottom: 0.5rem;
-      color: #e2e8f0;
+      color: #202124;
     }
     .markdown-body ul {
       list-style-type: disc;
@@ -41,51 +61,75 @@
     }
     .markdown-body p {
       margin-bottom: 0.5rem;
-      line-height: 1.6;
+      line-height: 1.65;
+      color: #202124;
     }
     .markdown-body strong {
-      color: #38bdf8;
+      color: #1A73E8;
+      font-weight: 600;
+    }
+    .markdown-body blockquote {
+      background: #E8F0FE;
+      border-left: 4px solid #4285F4;
+      padding: 0.65rem 0.85rem;
+      border-radius: 0.375rem;
+      margin-bottom: 0.75rem;
+      color: #174EA6;
     }
     .markdown-body code {
-      background: rgba(30, 41, 59, 0.8);
+      background: #F1F3F4;
       padding: 0.15rem 0.35rem;
       border-radius: 0.25rem;
       font-size: 0.85em;
-      color: #93c5fd;
+      color: #C5221F;
+      font-weight: 500;
     }
     /* Custom scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.4); }
-    ::-webkit-scrollbar-thumb { background: rgba(71, 85, 105, 0.6); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 0.8); }
+    ::-webkit-scrollbar-track { background: #F1F3F4; }
+    ::-webkit-scrollbar-thumb { background: #DADCE0; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #BDC1C6; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
+  <!-- Google Corporate 4-Color Accent Bar -->
+  <div class="google-top-stripe sticky top-0 z-40"></div>
+
   <!-- Top Navigation Header -->
-  <header class="glass-header sticky top-0 z-30 px-6 py-3.5 flex items-center justify-between">
-    <div class="flex items-center space-x-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+  <header class="glass-header sticky top-[4px] z-30 px-6 py-3.5 flex items-center justify-between">
+    <div class="flex items-center space-x-3.5">
+      <!-- Google Corporate 4-Color Brand Badge -->
+      <div class="w-10 h-10 rounded-xl bg-[#4285F4] flex items-center justify-center shadow-sm border border-[#1A73E8]/20">
         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
         </svg>
       </div>
       <div>
-        <div class="flex items-center space-x-2">
-          <h1 class="text-lg font-bold tracking-tight text-white">Altostrat Singapore</h1>
-          <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">Enterprise HR Agentic Portal</span>
+        <div class="flex items-center space-x-2.5">
+          <h1 class="text-lg font-bold tracking-tight text-[#202124]">Altostrat Singapore</h1>
+          <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#E8F0FE] text-[#1A73E8] border border-[#D2E3FC]">Enterprise HR Agentic Portal</span>
+          <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#E6F4EA] text-[#137333] border border-[#CEEAD6]">🛡️ Model Armor & Cloud DLP Active</span>
         </div>
-        <p class="text-xs text-slate-400">Powered by Google ADK (`gemini-2.5-flash`) • Live Vertex AI Search & MCP Integration</p>
+        <p class="text-xs text-[#5F6368] mt-0.5">Powered by Google ADK (`gemini-2.5-flash`) • Live Vertex AI Search & MCP Integration • Agent Gateway Ready</p>
       </div>
     </div>
 
-    <div class="flex items-center space-x-4">
-      <div id="liveStatusBadge" class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+    <div class="flex items-center space-x-3">
+      <!-- Agent Gateway Status Badge -->
+      <div id="gatewayStatusBadge" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-[#FEF7E0] border border-[#FEEFC3] text-xs font-medium text-[#B06000]">
+        <span class="w-2 h-2 rounded-full bg-[#FBBC05]"></span>
+        <span>Agent Gateway: Pass-Through Ready</span>
+      </div>
+
+      <!-- Live Grounded Status Badge -->
+      <div id="liveStatusBadge" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-[#E6F4EA] border border-[#CEEAD6] text-xs font-medium text-[#137333]">
+        <span class="w-2 h-2 rounded-full bg-[#34A853] animate-pulse"></span>
         <span>Live Grounded: VAIS + WorkWeek + ServiceImmediately</span>
       </div>
-      <button onclick="loadDashboard()" class="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-medium text-slate-200 flex items-center space-x-1.5 transition">
-        <svg id="refreshIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+      <button onclick="loadDashboard()" class="px-3.5 py-1.5 rounded-lg bg-white hover:bg-[#F1F3F4] border border-[#DADCE0] text-xs font-semibold text-[#202124] flex items-center space-x-1.5 shadow-sm transition">
+        <svg id="refreshIcon" class="w-3.5 h-3.5 text-[#4285F4]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
         <span>ライブデータ更新</span>
@@ -99,70 +143,99 @@
     <!-- Left Column: Live Grounded Employee Dashboard (4 cols) -->
     <div class="lg:col-span-4 space-y-5">
 
-      <!-- Card 1: Employee Profile (WorkWeek MCP) -->
-      <div class="glass-card rounded-2xl p-5 shadow-xl">
+      <!-- Card 1: Employee Profile (WorkWeek MCP) — Google Blue Accent -->
+      <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#4285F4]">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center space-x-2">
-            <span class="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400">
+            <span class="p-1.5 rounded-lg bg-[#E8F0FE] text-[#1A73E8]">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </span>
-            <h2 class="text-sm font-semibold text-slate-200">従業員プロファイル</h2>
+            <h2 class="text-sm font-bold text-[#202124]">従業員プロファイル</h2>
           </div>
-          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">WorkWeek MCP</span>
+          <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#E8F0FE] text-[#1A73E8] border border-[#D2E3FC]">WorkWeek MCP</span>
         </div>
 
         <div id="profileContent" class="space-y-2.5 text-xs">
           <div class="animate-pulse flex space-x-3 items-center py-2">
-            <div class="w-10 h-10 rounded-full bg-slate-700"></div>
+            <div class="w-10 h-10 rounded-full bg-gray-200"></div>
             <div class="flex-1 space-y-2">
-              <div class="h-3 bg-slate-700 rounded w-3/4"></div>
-              <div class="h-2.5 bg-slate-800 rounded w-1/2"></div>
+              <div class="h-3 bg-gray-200 rounded w-3/4"></div>
+              <div class="h-2.5 bg-gray-100 rounded w-1/2"></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Card 2: Live Leave Balances (WorkWeek MCP) -->
-      <div class="glass-card rounded-2xl p-5 shadow-xl">
+      <!-- Card 2: Live Leave Balances (WorkWeek MCP) — Google Green Accent -->
+      <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#34A853]">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center space-x-2">
-            <span class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
+            <span class="p-1.5 rounded-lg bg-[#E6F4EA] text-[#137333]">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </span>
-            <h2 class="text-sm font-semibold text-slate-200">リアルタイム休暇残高</h2>
+            <h2 class="text-sm font-bold text-[#202124]">リアルタイム休暇残高</h2>
           </div>
-          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">WorkWeek MCP</span>
+          <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#E6F4EA] text-[#137333] border border-[#CEEAD6]">WorkWeek MCP</span>
         </div>
 
         <div id="balancesContent" class="space-y-3.5 text-xs">
           <div class="animate-pulse space-y-3 py-2">
-            <div class="h-3 bg-slate-700 rounded w-full"></div>
-            <div class="h-3 bg-slate-700 rounded w-5/6"></div>
+            <div class="h-3 bg-gray-200 rounded w-full"></div>
+            <div class="h-3 bg-gray-200 rounded w-5/6"></div>
           </div>
         </div>
       </div>
 
-      <!-- Card 3: Active IT/HR Support Tickets (ServiceImmediately MCP) -->
-      <div class="glass-card rounded-2xl p-5 shadow-xl">
+      <!-- Card 3: Active IT/HR Support Tickets (ServiceImmediately MCP) — Google Yellow Accent -->
+      <div class="glass-card rounded-2xl p-5 border-t-4 border-t-[#FBBC05]">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center space-x-2">
-            <span class="p-1.5 rounded-lg bg-amber-500/10 text-amber-400">
+            <span class="p-1.5 rounded-lg bg-[#FEF7E0] text-[#B06000]">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
               </svg>
             </span>
-            <h2 class="text-sm font-semibold text-slate-200">オープン中のサポートチケット</h2>
+            <h2 class="text-sm font-bold text-[#202124]">オープン中のサポートチケット</h2>
           </div>
-          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">ServiceImmediately MCP</span>
+          <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#FEF7E0] text-[#B06000] border border-[#FEEFC3]">ServiceImmediately MCP</span>
         </div>
 
         <div id="ticketsContent" class="space-y-3 text-xs">
           <div class="animate-pulse space-y-2 py-2">
-            <div class="h-12 bg-slate-800 rounded-xl w-full"></div>
+            <div class="h-12 bg-gray-100 rounded-xl w-full"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: AI Governance: Agent Gateway & Model Armor / DLP — Google Red Accent -->
+      <div class="glass-card rounded-2xl p-4 border-t-4 border-t-[#EA4335] bg-white">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center space-x-2">
+            <span class="p-1.5 rounded-lg bg-[#FCE8E6] text-[#C5221F]">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </span>
+            <h2 class="text-xs font-bold text-[#202124]">AI セキュリティ & Agent Gateway</h2>
+          </div>
+          <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#FCE8E6] text-[#C5221F] border border-[#FAD2CF]">SDD NFR-2.1</span>
+        </div>
+        <div class="text-[11px] text-[#3C4043] space-y-1.5">
+          <div class="flex justify-between items-center">
+            <span class="text-[#5F6368]">Cloud DLP (SPII自動墨消し):</span>
+            <span class="font-semibold text-[#137333]">NRIC / クレカ / マイナンバー対応</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-[#5F6368]">Model Armor (攻撃遮断):</span>
+            <span class="font-semibold text-[#137333]">Prompt Injection 100% 監視</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-[#5F6368]">Agent Gateway 制御モード:</span>
+            <span id="gwCardMode" class="font-mono font-semibold text-[#1A73E8]">PREPARED_PASS_THROUGH</span>
           </div>
         </div>
       </div>
@@ -170,80 +243,88 @@
     </div>
 
     <!-- Right Column: Interactive Enterprise HR Agent Chat Workspace (8 cols) -->
-    <div class="lg:col-span-8 flex flex-col glass-card rounded-2xl shadow-2xl overflow-hidden h-[760px]">
+    <div class="lg:col-span-8 flex flex-col glass-card rounded-2xl overflow-hidden h-[780px] border-t-4 border-t-[#4285F4]">
 
       <!-- Chat Top Bar & Quick Action Scenarios -->
-      <div class="p-4 border-b border-slate-700/70 bg-slate-900/50 space-y-3">
+      <div class="p-4 border-b border-[#DADCE0] bg-[#F8F9FA] space-y-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
-            <h3 class="text-sm font-semibold text-white">HR Coordinator Agent (`root_agent`)</h3>
-            <span class="text-xs text-slate-400">— 並列グラウンディング & ゼロモック実行</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-[#4285F4]"></span>
+            <h3 class="text-sm font-bold text-[#202124]">HR Coordinator Agent (`root_agent`)</h3>
+            <span class="text-xs text-[#5F6368]">— 並列グラウンディング & ゼロモック実行</span>
           </div>
-          <span id="lastLatencyBadge" class="hidden px-2.5 py-0.5 text-[11px] font-mono rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/20"></span>
+          <div class="flex items-center space-x-2">
+            <span id="lastSecurityBadge" class="hidden px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-[#E6F4EA] text-[#137333] border border-[#CEEAD6]"></span>
+            <span id="lastLatencyBadge" class="hidden px-2.5 py-0.5 text-[11px] font-mono font-semibold rounded-full bg-[#E8F0FE] text-[#1A73E8] border border-[#D2E3FC]"></span>
+          </div>
         </div>
 
         <!-- One-Click Quick Action Scenario Chips -->
         <div>
-          <p class="text-[11px] text-slate-400 mb-1.5 font-medium">💡 ワンクリック検証シナリオ（クリックで即座に質問）：</p>
+          <p class="text-[11px] text-[#5F6368] mb-1.5 font-semibold">💡 ワンクリック検証シナリオ（クリックで即座に質問）：</p>
           <div class="flex flex-wrap gap-1.5">
             <button onclick="sendQuickPrompt('シンガポールのフルタイム従業員の有給傷病休暇（Outpatient Sick Leave）と入院休暇（Hospitalization Leave）の日数と診断書（MC）ルールを教えてください。')"
-              class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-blue-600/20 hover:border-blue-500/40 border border-slate-700 text-xs text-slate-200 transition flex items-center space-x-1">
+              class="px-2.5 py-1 rounded-lg bg-white hover:bg-[#E8F0FE] hover:border-[#4285F4] border border-[#DADCE0] text-xs font-medium text-[#202124] shadow-sm transition flex items-center space-x-1">
               <span>🇸🇬</span><span>傷病・入院休暇規程 (VAIS)</span>
             </button>
             <button onclick="sendQuickPrompt('ビジネス会食での贈答品（Host Gift）の上限金額と、ギフトカード・商品券が認められるか教えてください。')"
-              class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-blue-600/20 hover:border-blue-500/40 border border-slate-700 text-xs text-slate-200 transition flex items-center space-x-1">
+              class="px-2.5 py-1 rounded-lg bg-white hover:bg-[#E8F0FE] hover:border-[#4285F4] border border-[#DADCE0] text-xs font-medium text-[#202124] shadow-sm transition flex items-center space-x-1">
               <span>🎁</span><span>贈答品・ギフトカード規程 (VAIS)</span>
             </button>
             <button onclick="sendQuickPrompt('私の現在の休暇残高（有給休暇・傷病休暇）と登録住所を教えてください。')"
-              class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-emerald-600/20 hover:border-emerald-500/40 border border-slate-700 text-xs text-slate-200 transition flex items-center space-x-1">
+              class="px-2.5 py-1 rounded-lg bg-white hover:bg-[#E6F4EA] hover:border-[#34A853] border border-[#DADCE0] text-xs font-medium text-[#202124] shadow-sm transition flex items-center space-x-1">
               <span>📅</span><span>私の休暇残高と住所照会 (WorkWeek MCP)</span>
             </button>
             <button onclick="sendQuickPrompt('私の現在オープン中のサポートチケット一覧と詳細を教えてください。')"
-              class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-amber-600/20 hover:border-amber-500/40 border border-slate-700 text-xs text-slate-200 transition flex items-center space-x-1">
+              class="px-2.5 py-1 rounded-lg bg-white hover:bg-[#FEF7E0] hover:border-[#FBBC05] border border-[#DADCE0] text-xs font-medium text-[#202124] shadow-sm transition flex items-center space-x-1">
               <span>🎫</span><span>オープン中のチケット確認 (ServiceImmediately MCP)</span>
             </button>
             <button onclick="sendQuickPrompt('シンガポールの傷病休暇規程を確認した上で、私の現在の病気休暇の残高と、オープン中のサポートチケットをすべてまとめて教えてください。')"
-              class="px-2.5 py-1 rounded-lg bg-gradient-to-r from-blue-600/20 to-indigo-600/20 hover:from-blue-600/30 hover:to-indigo-600/30 border border-blue-500/40 text-xs text-blue-200 font-medium transition flex items-center space-x-1">
+              class="px-2.5 py-1 rounded-lg bg-[#E8F0FE] hover:bg-[#D2E3FC] border border-[#4285F4] text-xs text-[#1A73E8] font-bold shadow-sm transition flex items-center space-x-1">
               <span>⚡</span><span>複合クエリ：規程＋休暇残高＋チケット一括並列照会</span>
+            </button>
+            <button onclick="sendQuickPrompt('私のシンガポールNRIC番号 S1234567A とクレジットカード 4111-2222-3333-4444、マイナンバー 1234-5678-9012 を登録したいのですが、現在の私の有給休暇の残高を教えてください。')"
+              class="px-2.5 py-1 rounded-lg bg-[#FCE8E6] hover:bg-[#FAD2CF] border border-[#EA4335] text-xs text-[#C5221F] font-bold shadow-sm transition flex items-center space-x-1">
+              <span>🛡️</span><span>DLP個人情報マスキング＆Agent Gateway検証</span>
             </button>
           </div>
         </div>
       </div>
 
       <!-- Chat Message History -->
-      <div id="chatMessages" class="flex-1 overflow-y-auto p-5 space-y-4">
+      <div id="chatMessages" class="flex-1 overflow-y-auto p-5 space-y-4 bg-white">
         <!-- Welcome Message -->
         <div class="flex items-start space-x-3">
-          <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0">HR</div>
-          <div class="bg-slate-800/90 border border-slate-700/80 rounded-2xl rounded-tl-sm p-4 max-w-2xl text-sm text-slate-200 space-y-2">
-            <p class="font-medium text-white">こんにちは、Tomohito さん（従業員ID: <code class="text-blue-400">EMP-779</code>）！</p>
-            <p class="text-xs text-slate-300 leading-relaxed">
+          <div class="w-8 h-8 rounded-lg bg-[#4285F4] flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-sm">HR</div>
+          <div class="bg-[#F8F9FA] border border-[#DADCE0] rounded-2xl rounded-tl-sm p-4 max-w-2xl text-sm text-[#202124] space-y-2 shadow-sm">
+            <p class="font-bold text-[#202124]">こんにちは、Tomohito さん（従業員ID: <code class="text-[#1A73E8] bg-[#E8F0FE] px-1.5 py-0.5 rounded">EMP-779</code>）！</p>
+            <p class="text-xs text-[#3C4043] leading-relaxed">
               Altostrat Singapore エンタープライズ HR エージェントへようこそ。以下の 3 つのライブデータソースに直結しています：
             </p>
-            <ul class="text-xs text-slate-300 space-y-1 list-disc pl-4">
-              <li><strong class="text-blue-400">Vertex AI Search (`hr-policies-lab-engine`)</strong>：シンガポール就業規則・行動規範ハンドブックの正確な条項検索</li>
-              <li><strong class="text-emerald-400">WorkWeek MCP (`/work-week/mcp/`)</strong>：従業員プロファイル・有給/傷病休暇残高のリアルタイム照会・申請</li>
-              <li><strong class="text-amber-400">ServiceImmediately MCP (`/service-immediately/mcp/`)</strong>：IT/HR サポートチケットの照会・起票・段階的ステータス更新</li>
+            <ul class="text-xs text-[#3C4043] space-y-1.5 list-disc pl-4">
+              <li><strong class="text-[#1A73E8]">Vertex AI Search (`hr-policies-lab-engine`)</strong>：シンガポール就業規則・行動規範ハンドブックの正確な条項検索</li>
+              <li><strong class="text-[#137333]">WorkWeek MCP (`/work-week/mcp/`)</strong>：従業員プロファイル・有給/傷病休暇残高のリアルタイム照会・申請</li>
+              <li><strong class="text-[#B06000]">ServiceImmediately MCP (`/service-immediately/mcp/`)</strong>：IT/HR サポートチケットの照会・起票・段階的ステータス更新</li>
+              <li><strong class="text-[#C5221F]">Model Armor & Cloud DLP + Agent Gateway</strong>：個人情報（NRIC・マイナンバー・クレカ等）の自動墨消しとエージェント接続制御</li>
             </ul>
-            <p class="text-xs text-slate-400 pt-1">上のワンクリック検証ボタンをクリックするか、下の入力欄から自由に質問してください。</p>
+            <p class="text-xs text-[#5F6368] pt-1">上のワンクリック検証ボタンをクリックするか、下の入力欄から自由に質問してください。</p>
           </div>
         </div>
       </div>
 
       <!-- Chat Input Form -->
-      <div class="p-4 border-t border-slate-700/70 bg-slate-900/70">
+      <div class="p-4 border-t border-[#DADCE0] bg-[#F8F9FA]">
         <form id="chatForm" onsubmit="handleChatSubmit(event)" class="flex items-center space-x-3">
           <input
             id="chatInput"
             type="text"
-            placeholder="HR規程、休暇残高、サポートチケットについて質問を入力してください..."
-            class="flex-1 bg-slate-800/90 border border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400 outline-none transition"
+            placeholder="HR規程、休暇残高、サポートチケットについて質問を入力してください（個人情報も自動マスキングされます）..."
+            class="flex-1 bg-white border border-[#DADCE0] focus:border-[#4285F4] focus:ring-2 focus:ring-[#4285F4]/20 rounded-xl px-4 py-3 text-sm text-[#202124] placeholder-[#5F6368] outline-none transition shadow-sm"
           />
           <button
             id="sendBtn"
             type="submit"
-            class="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold text-sm shadow-lg shadow-blue-600/25 flex items-center space-x-2 transition disabled:opacity-50"
+            class="px-5 py-3 rounded-xl bg-[#4285F4] hover:bg-[#1A73E8] active:bg-[#174EA6] text-white font-bold text-sm shadow-sm flex items-center space-x-2 transition disabled:opacity-50"
           >
             <span>送信</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,6 +351,10 @@
         renderProfile(data.profile, data.employee_id);
         renderBalances(data.balances);
         renderTickets(data.tickets);
+        if (data.gateway_status) {
+          const gwEl = document.getElementById('gwCardMode');
+          if (gwEl) gwEl.textContent = data.gateway_status.policy_mode || 'PREPARED_PASS_THROUGH';
+        }
       } catch (err) {
         console.error('Failed to load dashboard:', err);
       } finally {
@@ -293,27 +378,27 @@
       const dept = 'Enterprise Cloud Engineering (Singapore)';
 
       el.innerHTML = `
-        <div class="flex items-center space-x-3 pb-2.5 border-b border-slate-800">
-          <div class="w-11 h-11 rounded-full bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white font-bold text-sm shadow">
+        <div class="flex items-center space-x-3 pb-2.5 border-b border-[#DADCE0]">
+          <div class="w-11 h-11 rounded-full bg-[#4285F4] flex items-center justify-center text-white font-bold text-sm shadow-sm">
             TE
           </div>
           <div>
-            <div class="font-semibold text-white text-sm">${name}</div>
-            <div class="text-slate-400 text-xs flex items-center space-x-2">
-              <span class="font-mono text-blue-400 font-semibold">${id}</span>
+            <div class="font-bold text-[#202124] text-sm">${name}</div>
+            <div class="text-[#5F6368] text-xs flex items-center space-x-1.5 mt-0.5">
+              <span class="font-mono text-[#1A73E8] font-bold bg-[#E8F0FE] px-1.5 py-0.5 rounded">${id}</span>
               <span>•</span>
               <span>${dept}</span>
             </div>
           </div>
         </div>
-        <div class="pt-1.5 space-y-1.5 text-slate-300">
+        <div class="pt-2 space-y-1.5 text-[#3C4043]">
           <div class="flex justify-between">
-            <span class="text-slate-400">内線 / 電話:</span>
-            <span class="font-mono text-slate-200">${phone}</span>
+            <span class="text-[#5F6368]">内線 / 電話:</span>
+            <span class="font-mono font-semibold text-[#202124]">${phone}</span>
           </div>
           <div class="flex justify-between items-start gap-2">
-            <span class="text-slate-400 shrink-0">登録オフィス住所:</span>
-            <span class="text-right text-slate-200 font-medium">${address}</span>
+            <span class="text-[#5F6368] shrink-0">登録オフィス住所:</span>
+            <span class="text-right text-[#202124] font-semibold">${address}</span>
           </div>
         </div>
       `;
@@ -344,27 +429,27 @@
       el.innerHTML = `
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <span class="font-medium text-slate-300">🏖️ 年次有給休暇 (Vacation Leave)</span>
-            <span class="font-mono font-bold text-emerald-400">${vacRem.toFixed(1)} / ${vacTotal.toFixed(1)} 日</span>
+            <span class="font-semibold text-[#202124]">🏖️ 年次有給休暇 (Vacation Leave)</span>
+            <span class="font-mono font-bold text-[#137333]">${vacRem.toFixed(1)} / ${vacTotal.toFixed(1)} 日</span>
           </div>
-          <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
-            <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500" style="width: ${vacPct}%"></div>
+          <div class="w-full h-2.5 bg-[#E6F4EA] rounded-full overflow-hidden border border-[#CEEAD6]">
+            <div class="h-full bg-[#34A853] rounded-full transition-all duration-500" style="width: ${vacPct}%"></div>
           </div>
         </div>
 
         <div class="space-y-1.5 pt-1">
           <div class="flex justify-between text-xs">
-            <span class="font-medium text-slate-300">🏥 有給傷病休暇 (Outpatient Sick)</span>
-            <span class="font-mono font-bold text-blue-400">${sickRem.toFixed(1)} / ${sickTotal.toFixed(1)} 日</span>
+            <span class="font-semibold text-[#202124]">🏥 有給傷病休暇 (Outpatient Sick)</span>
+            <span class="font-mono font-bold text-[#1A73E8]">${sickRem.toFixed(1)} / ${sickTotal.toFixed(1)} 日</span>
           </div>
-          <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
-            <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-400 rounded-full transition-all duration-500" style="width: ${sickPct}%"></div>
+          <div class="w-full h-2.5 bg-[#E8F0FE] rounded-full overflow-hidden border border-[#D2E3FC]">
+            <div class="h-full bg-[#4285F4] rounded-full transition-all duration-500" style="width: ${sickPct}%"></div>
           </div>
         </div>
 
-        <div class="pt-2 flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-800/80">
+        <div class="pt-2 flex items-center justify-between text-[11px] text-[#5F6368] border-t border-[#DADCE0]">
           <span>シンガポール法定入院休暇枠 (Section 25):</span>
-          <span class="font-mono text-slate-300 font-semibold">最大 60.0 日/年</span>
+          <span class="font-mono text-[#202124] font-bold">最大 60.0 日/年</span>
         </div>
       `;
     }
@@ -375,7 +460,7 @@
       const closedCount = ticketsData?.closed_tickets_count ?? 0;
 
       if (openTickets.length === 0) {
-        el.innerHTML = `<div class="text-slate-400 py-2">現在オープン中のチケットはありません（クローズ済: ${closedCount}件）</div>`;
+        el.innerHTML = `<div class="text-[#5F6368] py-2">現在オープン中のチケットはありません（クローズ済: ${closedCount}件）</div>`;
         return;
       }
 
@@ -394,19 +479,19 @@
         const nextState = nextStateMap[status] || null;
 
         return `
-          <div class="p-3 rounded-xl bg-slate-800/70 border border-slate-700/80 space-y-2">
+          <div class="p-3 rounded-xl bg-[#F8F9FA] border border-[#DADCE0] space-y-2 shadow-sm">
             <div class="flex items-center justify-between">
-              <span class="font-mono font-bold text-amber-400 text-xs">${id}</span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30">
+              <span class="font-mono font-bold text-[#B06000] text-xs">${id}</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#FEF7E0] text-[#B06000] border border-[#FEEFC3]">
                 ${status}
               </span>
             </div>
-            <div class="text-slate-200 font-medium leading-snug">${desc}</div>
-            <div class="flex items-center justify-between pt-1 border-t border-slate-700/60 text-[11px]">
-              <span class="text-slate-400">優先度: ${priority}</span>
+            <div class="text-[#202124] font-semibold leading-snug">${desc}</div>
+            <div class="flex items-center justify-between pt-1.5 border-t border-[#DADCE0] text-[11px]">
+              <span class="text-[#5F6368] font-medium">優先度: ${priority}</span>
               ${nextState ? `
                 <button onclick="advanceTicketStatus('${id}', '${nextState}')"
-                  class="px-2 py-1 rounded bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 border border-blue-500/30 font-medium transition">
+                  class="px-2.5 py-1 rounded bg-[#E8F0FE] hover:bg-[#D2E3FC] text-[#1A73E8] border border-[#4285F4]/30 font-semibold transition">
                   ステータスを進める → ${nextState.toUpperCase()}
                 </button>
               ` : ''}
@@ -414,7 +499,7 @@
           </div>
         `;
       }).join('') + `
-        <div class="text-[11px] text-slate-400 text-right pt-1">
+        <div class="text-[11px] text-[#5F6368] text-right pt-1">
           他クローズ済み履歴: ${closedCount} 件（プロンプト肥大化防止のため自動圧縮）
         </div>
       `;
@@ -422,7 +507,7 @@
 
     async function advanceTicketStatus(ticketId, nextStatus) {
       try {
-        const res = await fetch('/api/ticket/status', {
+        await fetch('/api/ticket/status', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ticket_id: ticketId, new_status: nextStatus })
@@ -466,17 +551,32 @@
         currentSessionId = data.session_id;
 
         removeMessage(loadingId);
-        appendAgentMessage(data.response, data.tools || [], data.latency_sec);
+        appendAgentMessage(
+          data.response,
+          data.tools || [],
+          data.latency_sec,
+          data.security_guardrails,
+          data.agent_gateway
+        );
 
         const badge = document.getElementById('lastLatencyBadge');
         badge.textContent = `⚡ 直近ターン応答: ${data.latency_sec}秒`;
         badge.classList.remove('hidden');
 
-        // Refresh dashboard cards in case tools modified state
+        const secBadge = document.getElementById('lastSecurityBadge');
+        if (data.security_guardrails?.dlp_masked) {
+          secBadge.className = 'px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-[#FCE8E6] text-[#C5221F] border border-[#FAD2CF]';
+          secBadge.textContent = `🛡️ DLP PIIマスキング実行済 (${data.security_guardrails.dlp_findings.length}件)`;
+        } else {
+          secBadge.className = 'px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-[#E6F4EA] text-[#137333] border border-[#CEEAD6]';
+          secBadge.textContent = `🛡️ Model Armor & DLP: 安全確認済`;
+        }
+        secBadge.classList.remove('hidden');
+
         loadDashboard();
       } catch (err) {
         removeMessage(loadingId);
-        appendAgentMessage('通信エラーが発生しました: ' + err.message, [], 0);
+        appendAgentMessage('通信エラーが発生しました: ' + err.message, [], 0, null, null);
       } finally {
         sendBtn.disabled = false;
         input.focus();
@@ -488,7 +588,7 @@
       const div = document.createElement('div');
       div.className = 'flex items-start justify-end space-x-3';
       div.innerHTML = `
-        <div class="bg-blue-600 text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-xl text-sm shadow-lg">
+        <div class="bg-[#1A73E8] text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-xl text-sm shadow-sm font-medium">
           ${escapeHtml(text)}
         </div>
       `;
@@ -503,13 +603,13 @@
       div.id = id;
       div.className = 'flex items-start space-x-3';
       div.innerHTML = `
-        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0">HR</div>
-        <div class="bg-slate-800/90 border border-slate-700/80 rounded-2xl rounded-tl-sm px-4 py-3 text-xs text-slate-300 flex items-center space-x-2">
-          <svg class="w-4 h-4 animate-spin text-blue-400" fill="none" viewBox="0 0 24 24">
+        <div class="w-8 h-8 rounded-lg bg-[#4285F4] flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-sm">HR</div>
+        <div class="bg-[#F8F9FA] border border-[#DADCE0] rounded-2xl rounded-tl-sm px-4 py-3 text-xs text-[#3C4043] flex items-center space-x-2 shadow-sm font-medium">
+          <svg class="w-4 h-4 animate-spin text-[#4285F4]" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
           </svg>
-          <span>Vertex AI Search & MCP サーバーに並列グラウンディング中...</span>
+          <span>Agent Gateway 検証 & Vertex AI Search / MCP サーバー並列グラウンディング中...</span>
         </div>
       `;
       container.appendChild(div);
@@ -522,28 +622,65 @@
       if (el) el.remove();
     }
 
-    function appendAgentMessage(markdownText, tools, latencySec) {
+    function appendAgentMessage(markdownText, tools, latencySec, secGuardrails, agentGateway) {
       const container = document.getElementById('chatMessages');
       const div = document.createElement('div');
       div.className = 'flex items-start space-x-3';
 
-      const toolsHtml = tools.length > 0 ? `
-        <div class="flex flex-wrap items-center gap-1.5 mb-2.5 pb-2 border-b border-slate-700/60">
-          <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">実行ツール (${latencySec}s):</span>
-          ${tools.map(t => `
-            <span class="px-2 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/30 text-[11px] font-mono text-blue-300 flex items-center space-x-1">
+      // Build Governance & Tool Badges Header
+      let metaBadgesHtml = '';
+      const badges = [];
+
+      if (agentGateway) {
+        const routedAgents = (agentGateway.downstream_agents_routed || []).join(', ');
+        badges.push(`
+          <span class="px-2 py-0.5 rounded-md bg-[#FEF7E0] border border-[#FEEFC3] text-[10px] font-mono font-semibold text-[#B06000] flex items-center space-x-1" title="Agent Gateway Audit ID: ${agentGateway.audit_id}">
+            <span>🌐 Gateway:</span><span>${agentGateway.decision} [${routedAgents}]</span>
+          </span>
+        `);
+      }
+
+      if (secGuardrails) {
+        if (secGuardrails.dlp_masked) {
+          badges.push(`
+            <span class="px-2 py-0.5 rounded-md bg-[#FCE8E6] border border-[#FAD2CF] text-[10px] font-mono font-bold text-[#C5221F] flex items-center space-x-1">
+              <span>🛡️ Cloud DLP:</span><span>個人情報マスキング済 (${secGuardrails.dlp_findings.length}件)</span>
+            </span>
+          `);
+        } else {
+          badges.push(`
+            <span class="px-2 py-0.5 rounded-md bg-[#E6F4EA] border border-[#CEEAD6] text-[10px] font-mono font-semibold text-[#137333] flex items-center space-x-1">
+              <span>🛡️ Model Armor & DLP:</span><span>PASSED (${secGuardrails.scan_latency_ms || 0}ms)</span>
+            </span>
+          `);
+        }
+      }
+
+      if (tools && tools.length > 0) {
+        tools.forEach(t => {
+          badges.push(`
+            <span class="px-2 py-0.5 rounded-md bg-[#E8F0FE] border border-[#D2E3FC] text-[11px] font-mono font-semibold text-[#1A73E8] flex items-center space-x-1">
               <span>⚡</span><span>${t.name}</span>
             </span>
-          `).join('')}
-        </div>
-      ` : '';
+          `);
+        });
+      }
+
+      if (badges.length > 0) {
+        metaBadgesHtml = `
+          <div class="flex flex-wrap items-center gap-1.5 mb-2.5 pb-2 border-b border-[#DADCE0]">
+            <span class="text-[10px] font-bold text-[#5F6368] uppercase tracking-wider">実行テレメトリ (${latencySec}s):</span>
+            ${badges.join('')}
+          </div>
+        `;
+      }
 
       const renderedHtml = marked.parse(markdownText || '');
 
       div.innerHTML = `
-        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0">HR</div>
-        <div class="bg-slate-800/90 border border-slate-700/80 rounded-2xl rounded-tl-sm p-4 max-w-2xl text-sm text-slate-200 shadow-xl">
-          ${toolsHtml}
+        <div class="w-8 h-8 rounded-lg bg-[#4285F4] flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-sm">HR</div>
+        <div class="bg-[#F8F9FA] border border-[#DADCE0] rounded-2xl rounded-tl-sm p-4 max-w-2xl text-sm text-[#202124] shadow-sm">
+          ${metaBadgesHtml}
           <div class="markdown-body text-xs leading-relaxed">${renderedHtml}</div>
         </div>
       `;
